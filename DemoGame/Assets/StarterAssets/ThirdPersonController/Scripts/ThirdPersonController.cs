@@ -100,6 +100,9 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDMotionFront;
+        private int _animIDMotionSide;
+
 
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
@@ -176,6 +179,8 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDMotionFront = Animator.StringToHash("FrontMove");
+            _animIDMotionSide = Animator.StringToHash("SidewayMove");
         }
 
         private void GroundedCheck()
@@ -311,7 +316,18 @@ namespace StarterAssets
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+
+
+            if (_input.move == Vector2.zero)
+            {
+                targetSpeed = 0.0f;
+            }
+            else if (_input.move.x != 0 || _input.move.y < 0)
+            {
+                targetSpeed = MoveSpeed;
+            }
+
+
 
             // a reference to the players current horizontal velocity
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
@@ -354,6 +370,8 @@ namespace StarterAssets
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                _animator.SetFloat(_animIDMotionSide, _input.move.x);
+                _animator.SetFloat(_animIDMotionFront, _input.move.y);
             }
         }
 
